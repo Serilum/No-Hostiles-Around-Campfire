@@ -1,14 +1,14 @@
 modLoader="javafml"
 loaderVersion="*"
 license="All rights reserved"
-issueTrackerURL="https://github.com/ricksouth/serilum-mc-mods/labels/Mod:%20No%20Hostiles%20Around%20Campfire"
+issueTrackerURL="https://github.com/Serilum/.issue-tracker/labels/Mod:%20No%20Hostiles%20Around%20Campfire"
 logoFile="icon.png"
 
 [[mods]]
 modId="nohostilesaroundcampfire"
-version="5.7"
+version="5.8"
 displayName="No Hostiles Around Campfire"
-displayURL="https://curseforge.com/minecraft/mc-mods/no-hostiles-around-campfire"
+displayURL="https://serilum.com/mod/no-hostiles-around-campfire"
 authors="Rick South"
 description='''Prevent hostile mobs from spawning around the campfire and burn existing mobs when placing a campfire down. With a configurable radius.
 '''
@@ -21,13 +21,15 @@ If you would like to contribute too, check out https://ricksouth.com/donate. App
 
 [[dependencies.nohostilesaroundcampfire]]
     modId="collective"
+    type="required"
     mandatory=true
-    versionRange="[7.3,)"
+    versionRange="[7.21,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.nohostilesaroundcampfire]]
     modId="minecraft"
+    type="required"
     mandatory=true
     versionRange="[1.19.2]"
     ordering="NONE"
