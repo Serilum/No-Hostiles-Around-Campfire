@@ -35,14 +35,16 @@ public class ForgeCampfireEvent {
 			return;
 		}
 
-		Entity entity = e.getEntity();
-		if (!(entity instanceof Mob)) {
-			return;
-		}
-
-		if (!CampfireEvent.onEntityCheckSpawn((Mob)entity, (ServerLevel)level, null, e.getSpawnType())) {
-			e.setSpawnCancelled(true);
+		Mob mob = e.getEntity();
+		if (!CampfireEvent.onEntityCheckSpawn(mob, (ServerLevel)level, null, e.getSpawnType())) {
 			e.setCanceled(true);
+
+			if (!mob.isAddedToWorld()) {
+				e.setSpawnCancelled(true);
+			}
+			else {
+				mob.remove(Entity.RemovalReason.DISCARDED);
+			}
 		}
 	}
 	
