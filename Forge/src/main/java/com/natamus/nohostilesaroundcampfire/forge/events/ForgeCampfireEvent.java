@@ -36,12 +36,8 @@ public class ForgeCampfireEvent {
 			return;
 		}
 
-		Entity entity = e.getEntity();
-		if (!(entity instanceof Mob)) {
-			return;
-		}
-
-		if (!CampfireEvent.onEntityCheckSpawn((Mob)entity, (ServerLevel)level, null, e.getSpawnReason())) {
+		Mob mob = e.getEntity();
+		if (!CampfireEvent.onEntityCheckSpawn(mob, (ServerLevel)level, null, e.getSpawnReason())) {
 			e.setResult(Result.DENY);
 		}
 	}
