@@ -7,8 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.TickEvent.LevelTickEvent;
-import net.neoforged.neoforge.event.TickEvent.Phase;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -19,9 +18,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber
 public class NeoForgeCampfireEvent {
 	@SubscribeEvent
-	public static void onWorldTick(LevelTickEvent e) {
-		Level level = e.level;
-		if (level.isClientSide || !e.phase.equals(Phase.END)) {
+	public static void onWorldTick(LevelTickEvent.Post e) {
+		Level level = e.getLevel();
+		if (level.isClientSide) {
 			return;
 		}
 		
