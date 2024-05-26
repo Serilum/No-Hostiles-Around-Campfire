@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="nohostilesaroundcampfire"
-version="6.0"
+version="6.1"
 displayName="No Hostiles Around Campfire"
 displayURL="https://serilum.com/mod/no-hostiles-around-campfire"
 authors="Rick South"
@@ -14,7 +14,7 @@ description='''Prevent hostile mobs from spawning around the campfire and burn e
 '''
 credits='''Thank you very much to my Membership sponsors for supporting the development of this mod:  
 
-Alister, Andrean Olgo, aternosorg, BirdieMiner, Cherriesaurus, Jack, Jeremy Langford, Michael W. S., pepe1191, Shana Gitnick, Tyler Behl   
+Alister, Andrean Olgo, aternosorg, BirdieMiner, Cherriesaurus, Jeremy Langford, Michael W. S., Rare Students, Shana Gitnick, Tyler Behl   
 
 If you would like to contribute too, check out https://serilum.com/donate. Appreciate it! <3   
 '''
@@ -22,7 +22,7 @@ If you would like to contribute too, check out https://serilum.com/donate. Appre
 [[dependencies.nohostilesaroundcampfire]]
     modId="collective"
     mandatory=true
-    versionRange="[7.54,)"
+    versionRange="[7.60,)"
     ordering="NONE"
     side="BOTH"
 

@@ -5,15 +5,14 @@ import com.natamus.nohostilesaroundcampfire.events.CampfireEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber
 public class NeoForgeCampfireEvent {
@@ -28,20 +27,14 @@ public class NeoForgeCampfireEvent {
 	}
 	
 	@SubscribeEvent
-	public static void onEntityCheckSpawn(MobSpawnEvent.FinalizeSpawn e) {
+	public static void onEntityCheckSpawn(MobSpawnEvent.PositionCheck e) {
 		Level level = WorldFunctions.getWorldIfInstanceOfAndNotRemote(e.getLevel());
 		if (level == null) {
 			return;
 		}
 
-		Entity entity = e.getEntity();
-		if (!(entity instanceof Mob)) {
-			return;
-		}
-
-		if (!CampfireEvent.onEntityCheckSpawn((Mob)entity, (ServerLevel)level, null, e.getSpawnType())) {
-			e.setSpawnCancelled(true);
-			e.setCanceled(true);
+		if (!CampfireEvent.onEntityCheckSpawn(e.getEntity(), (ServerLevel)level, null, e.getSpawnType())) {
+			e.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
 		}
 	}
 	
