@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "nohostilesaroundcampfire",
-  "version": "7.0",
+  "version": "7.1",
 
   "name": "No Hostiles Around Campfire",
   "description": "Prevent hostile mobs from spawning around the campfire and burn existing mobs when placing a campfire down. With a configurable radius.",
@@ -23,7 +23,7 @@
     "fabric": "*",
     "minecraft": ">=1.20",
     "java": ">=17",
-    "collective": ">=7.68"
+    "collective": ">=7.78"
   },
 
   "custom": {
@@ -44,11 +44,10 @@
 	  " Alister",
 	  " Andrean Olgo",
 	  " aternosorg",
-	  " BirdieMiner",
 	  " Cherriesaurus",
 	  " Michael W. S.",
+	  " Nahuel Fernandez",
 	  " Shana Gitnick",
-	  " Sukhmai",
 	  " Tyler Behl"
   ]
 }

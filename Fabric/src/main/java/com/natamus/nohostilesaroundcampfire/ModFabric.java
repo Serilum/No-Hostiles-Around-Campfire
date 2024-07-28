@@ -1,6 +1,7 @@
 package com.natamus.nohostilesaroundcampfire;
 
 import com.natamus.collective.check.RegisterMod;
+import com.natamus.collective.check.ShouldLoadCheck;
 import com.natamus.collective.fabric.callbacks.CollectiveSpawnEvents;
 import com.natamus.nohostilesaroundcampfire.events.CampfireEvent;
 import com.natamus.nohostilesaroundcampfire.util.Reference;
@@ -14,6 +15,10 @@ public class ModFabric implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		if (!ShouldLoadCheck.shouldLoad(Reference.MOD_ID)) {
+			return;
+		}
+
 		setGlobalConstants();
 		ModCommon.init();
 
