@@ -5,10 +5,8 @@ import com.natamus.nohostilesaroundcampfire.events.CampfireEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 
-@EventBusSubscriber
 public class NeoForgeCampfireEvent {
 	@SubscribeEvent
 	public static void onEntityCheckSpawn(MobSpawnEvent.PositionCheck e) {
