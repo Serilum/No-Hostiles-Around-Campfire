@@ -12,14 +12,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
@@ -34,7 +35,7 @@ public class CampfireEvent {
 			return;
 		}
 
-		if (!blockEntityType.equals(BlockEntityType.CAMPFIRE)) {
+		if (!blockEntityType.equals(BlockEntityTypes.CAMPFIRE)) {
 			return;
 		}
 
@@ -78,7 +79,7 @@ public class CampfireEvent {
 			return true;
 		}
 
-		if (!BlockEntityData.cachedBlockEntities.get(BlockEntityType.CAMPFIRE).containsKey(level)) {
+		if (!BlockEntityData.cachedBlockEntities.get(BlockEntityTypes.CAMPFIRE).containsKey(level)) {
 			return true;
 		}
 
@@ -86,7 +87,7 @@ public class CampfireEvent {
 		Vec3i entityVec3i = new Vec3i(entityPos.getX(), entityPos.getY(), entityPos.getZ());
 
 		boolean foundCampfire = false;
-		for (BlockEntity campfireBlockEntity : BlockEntityData.cachedBlockEntities.get(BlockEntityType.CAMPFIRE).get(level)) {
+		for (BlockEntity campfireBlockEntity : BlockEntityData.cachedBlockEntities.get(BlockEntityTypes.CAMPFIRE).get(level)) {
 			if (!campfireBlockEntity.getBlockPos().closerThan(entityVec3i, ConfigHandler.preventHostilesRadius)) {
 				continue;
 			}
@@ -131,7 +132,7 @@ public class CampfireEvent {
 		}
 
 		List<Entity> passengers = mob.getPassengers();
-		if (passengers.size() > 0) {
+		if (!passengers.isEmpty()) {
 			for (Entity passenger : passengers) {
 				passenger.remove(RemovalReason.DISCARDED);
 			}
@@ -145,7 +146,7 @@ public class CampfireEvent {
 			return;
 		}
 
-		if (!blockEntityType.equals(BlockEntityType.CAMPFIRE)) {
+		if (!blockEntityType.equals(BlockEntityTypes.CAMPFIRE)) {
 			return;
 		}
 
