@@ -14,7 +14,7 @@ public class ModCommon {
 	}
 
 	private static void load() {
-		BlockEntityData.addBlockEntityToCache(BlockEntityType.CAMPFIRE);
+		BlockEntityData.addBlockEntityToCache(BlockEntityType.CAMPFIRE, true, false);
 
 		CachedBlockEntityCallback.BLOCK_ENTITY_ADDED.register((level, blockEntity, blockEntityType) -> {
 			CampfireEvent.onCampfireAdded(level, blockEntity, blockEntityType);
