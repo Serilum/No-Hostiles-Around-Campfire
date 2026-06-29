@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="nohostilesaroundcampfire"
-version="7.4"
+version="7.5"
 displayName="No Hostiles Around Campfire"
 displayURL="https://serilum.com/mod/no-hostiles-around-campfire"
 authors="Rick South"
