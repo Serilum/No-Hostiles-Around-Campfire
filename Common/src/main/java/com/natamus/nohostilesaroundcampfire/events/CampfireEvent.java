@@ -87,7 +87,7 @@ public class CampfireEvent {
 		Vec3i entityVec3i = new Vec3i(entityPos.getX(), entityPos.getY(), entityPos.getZ());
 
 		boolean foundCampfire = false;
-		for (BlockEntity campfireBlockEntity : BlockEntityData.cachedBlockEntities.get(BlockEntityTypes.CAMPFIRE).get(level)) {
+		for (BlockEntity campfireBlockEntity : BlockEntityData.getCachedBlockEntities(BlockEntityTypes.CAMPFIRE, level)) {
 			if (!campfireBlockEntity.getBlockPos().closerThan(entityVec3i, ConfigHandler.preventHostilesRadius)) {
 				continue;
 			}
