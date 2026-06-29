@@ -79,10 +79,6 @@ public class CampfireEvent {
 			return true;
 		}
 
-		if (!BlockEntityData.cachedBlockEntities.get(BlockEntityTypes.CAMPFIRE).containsKey(level)) {
-			return true;
-		}
-
 		BlockPos entityPos = mob.blockPosition();
 		Vec3i entityVec3i = new Vec3i(entityPos.getX(), entityPos.getY(), entityPos.getZ());
 
