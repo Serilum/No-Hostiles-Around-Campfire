@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "id": "nohostilesaroundcampfire",
-  "version": "7.5",
+  "version": "7.6",
 
   "name": "No Hostiles Around Campfire",
   "description": "Prevent hostile mobs from spawning around the campfire and burn existing mobs when placing a campfire down. With a configurable radius.",
-  "authors": [ "Rick South" ],
+  "authors": [ "Serilum" ],
   "contact": {
     "homepage": "https://serilum.com/mod/no-hostiles-around-campfire",
     "sources": "https://github.com/Serilum/No-Hostiles-Around-Campfire",
@@ -16,14 +16,14 @@
   "icon": "icon.png",
 
   "environment": "*",
-  "entrypoints": { "main": [ "com.natamus.nohostilesaroundcampfire.ModFabric" ], "modmenu": [ "com.natamus.nohostilesaroundcampfire.fabric.config.IntegrateModMenu" ] },
+  "entrypoints": { "main": [ "com.serilum.nohostilesaroundcampfire.ModFabric" ], "modmenu": [ "com.serilum.nohostilesaroundcampfire.fabric.config.IntegrateModMenu" ] },
 
   "depends": {
     "fabricloader": ">=0.18.0",
     "fabric-api": "*",
     "minecraft": ">=26.3",
     "java": ">=25",
-    "collective": ">=8.39"
+    "collective": ">=8.40"
   },
 
   "custom": {
@@ -38,7 +38,7 @@
 	  " ",
 	  "Thank you very much to my Membership sponsors for supporting the development of this mod!",
 	  " ",
-	  "If you would like to contribute too, check out https://serilum.com/donate.",
+	  "If you would like to contribute too, check out https://serilum.com/donate",
 	  " ",
 	  "Membership sponsors:",
 	  " Andrean Olgo",
