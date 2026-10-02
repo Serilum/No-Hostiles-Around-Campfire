@@ -1,11 +1,11 @@
-package com.natamus.nohostilesaroundcampfire.events;
+package com.serilum.nohostilesaroundcampfire.events;
 
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.functions.CompareBlockFunctions;
 import com.natamus.collective.functions.EntityFunctions;
-import com.natamus.nohostilesaroundcampfire.config.ConfigHandler;
-import com.natamus.nohostilesaroundcampfire.util.Reference;
-import com.natamus.nohostilesaroundcampfire.util.Util;
+import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
+import com.serilum.nohostilesaroundcampfire.util.Reference;
+import com.serilum.nohostilesaroundcampfire.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;

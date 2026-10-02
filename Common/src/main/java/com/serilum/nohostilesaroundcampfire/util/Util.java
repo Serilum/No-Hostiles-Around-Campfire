@@ -1,4 +1,4 @@
-package com.natamus.nohostilesaroundcampfire.util;
+package com.serilum.nohostilesaroundcampfire.util;
 
 import com.natamus.collective.functions.EntityFunctions;
 import net.minecraft.core.registries.BuiltInRegistries;

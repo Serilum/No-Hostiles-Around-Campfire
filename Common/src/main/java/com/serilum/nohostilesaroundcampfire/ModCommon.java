@@ -1,9 +1,9 @@
-package com.natamus.nohostilesaroundcampfire;
+package com.serilum.nohostilesaroundcampfire;
 
 import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.globalcallbacks.CachedBlockEntityCallback;
-import com.natamus.nohostilesaroundcampfire.config.ConfigHandler;
-import com.natamus.nohostilesaroundcampfire.events.CampfireEvent;
+import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
+import com.serilum.nohostilesaroundcampfire.events.CampfireEvent;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class ModCommon {

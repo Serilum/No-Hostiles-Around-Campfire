@@ -1,7 +1,7 @@
-package com.natamus.nohostilesaroundcampfire.forge.events;
+package com.serilum.nohostilesaroundcampfire.forge.events;
 
 import com.natamus.collective.functions.WorldFunctions;
-import com.natamus.nohostilesaroundcampfire.events.CampfireEvent;
+import com.serilum.nohostilesaroundcampfire.events.CampfireEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;

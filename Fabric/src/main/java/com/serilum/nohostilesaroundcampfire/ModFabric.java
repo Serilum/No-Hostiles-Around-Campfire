@@ -1,10 +1,10 @@
-package com.natamus.nohostilesaroundcampfire;
+package com.serilum.nohostilesaroundcampfire;
 
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
 import com.natamus.collective.fabric.callbacks.CollectiveSpawnEvents;
-import com.natamus.nohostilesaroundcampfire.events.CampfireEvent;
-import com.natamus.nohostilesaroundcampfire.util.Reference;
+import com.serilum.nohostilesaroundcampfire.events.CampfireEvent;
+import com.serilum.nohostilesaroundcampfire.util.Reference;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

@@ -1,7 +1,7 @@
-package com.natamus.nohostilesaroundcampfire.config;
+package com.serilum.nohostilesaroundcampfire.config;
 
 import com.natamus.collective.config.DuskConfig;
-import com.natamus.nohostilesaroundcampfire.util.Reference;
+import com.serilum.nohostilesaroundcampfire.util.Reference;
 
 import java.util.Arrays;
 import java.util.HashMap;
