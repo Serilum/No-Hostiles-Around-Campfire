@@ -1,34 +1,170 @@
 package com.serilum.nohostilesaroundcampfire.util;
 
+import com.natamus.collective.data.BlockEntityData;
+import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.functions.EntityFunctions;
+import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class Util {
 	private static final List<String> hostileSpecialEntities = new ArrayList<String>(Arrays.asList("FoxHound"));
 	private static final List<String> hostileSpecialResourceLocations = new ArrayList<String>(Arrays.asList("lycanitesmobs"));
-	
+	private static final List<EntitySpawnReason> preventableSpawnReasons = new ArrayList<>(Arrays.asList(EntitySpawnReason.NATURAL, EntitySpawnReason.CHUNK_GENERATION, EntitySpawnReason.SPAWNER, EntitySpawnReason.TRIAL_SPAWNER, EntitySpawnReason.PATROL, EntitySpawnReason.EVENT, EntitySpawnReason.REINFORCEMENT, EntitySpawnReason.STRUCTURE));
+	private static final HashMap<String, HashMap<EntityType<?>, Boolean>> entityListResults = new HashMap<>();
+
 	public static boolean entityIsHostile(Entity entity) {
-		if (entity.getType().getCategory().equals(MobCategory.MONSTER)) {
+		EntityType<?> entityType = entity.getType();
+		if (isInEntityList(ConfigHandler.entitiesToIgnore, entityType)) {
+			return false;
+		}
+
+		if (!entityType.getCategory().isFriendly()) {
 			return true;
 		}
-		
+
+		if (isInEntityList(ConfigHandler.entitiesToTreatAsHostile, entityType)) {
+			return true;
+		}
+
 		String entitystring = EntityFunctions.getEntityString(entity);
 		if (hostileSpecialEntities.contains(entitystring)) {
 			return true;
 		}
-		
-		Identifier rl = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+
+		Identifier rl = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
 		if (rl != null) {
 			return hostileSpecialResourceLocations.contains(rl.toString().split(":")[0]);
 		}
-		
+
+		return false;
+	}
+
+	public static boolean isInEntityList(String entityList, EntityType<?> entityType) {
+		if (entityList.isBlank()) {
+			return false;
+		}
+
+		HashMap<EntityType<?>, Boolean> results = entityListResults.get(entityList);
+		if (results == null) {
+			results = new HashMap<>();
+			entityListResults.put(entityList, results);
+		}
+
+		Boolean isInList = results.get(entityType);
+		if (isInList == null) {
+			isInList = matchesEntityList(entityList, entityType);
+			results.put(entityType, isInList);
+		}
+		return isInList;
+	}
+
+	private static boolean matchesEntityList(String entityList, EntityType<?> entityType) {
+		for (String rawEntry : entityList.split(",")) {
+			String entry = rawEntry.strip();
+			if (!entry.startsWith("#")) {
+				continue;
+			}
+
+			Identifier tagIdentifier = Identifier.tryParse(entry.substring(1));
+			if (tagIdentifier == null) {
+				continue;
+			}
+
+			if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityType).is(TagKey.create(Registries.ENTITY_TYPE, tagIdentifier))) {
+				return true;
+			}
+		}
+
+		return ConfigFunctions.isInIdList(entityList, EntityType.getKey(entityType).toString());
+	}
+
+	public static boolean isPreventableSpawnReason(EntitySpawnReason spawnReason) {
+		return preventableSpawnReasons.contains(spawnReason);
+	}
+
+	public static boolean isSpawnerSpawn(Mob mob, EntitySpawnReason spawnReason) {
+		if (EntitySpawnReason.isSpawner(spawnReason)) {
+			return true;
+		}
+		return EntityFunctions.isEntityFromSpawner(mob);
+	}
+
+	public static boolean isRaidMob(Mob mob) {
+		if (!(mob instanceof Raider raider)) {
+			return false;
+		}
+		return raider.getCurrentRaid() != null;
+	}
+
+	public static boolean isActiveCampfire(Level level, BlockPos campfirePos, BlockState campfireState) {
+		Block block = campfireState.getBlock();
+		if (!(block instanceof CampfireBlock)) {
+			return false;
+		}
+
+		if (!ConfigHandler.enableEffectForNormalCampfires) {
+			if (block.equals(Blocks.CAMPFIRE)) {
+				return false;
+			}
+		}
+		if (!ConfigHandler.enableEffectForSoulCampfires) {
+			if (block.equals(Blocks.SOUL_CAMPFIRE)) {
+				return false;
+			}
+		}
+
+		if (ConfigHandler.campfireMustBeLit) {
+			if (!campfireState.getValue(CampfireBlock.LIT)) {
+				return false;
+			}
+		}
+		if (ConfigHandler.campfireMustBeSignalling) {
+			if (!campfireState.getValue(CampfireBlock.SIGNAL_FIRE)) {
+				return false;
+			}
+		}
+		if (ConfigHandler.campfireMustHaveSkyAccess) {
+			if (!level.canSeeSky(campfirePos)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean isNearActiveCampfire(ServerLevel level, BlockPos pos) {
+		for (BlockEntity campfireBlockEntity : BlockEntityData.getCachedBlockEntities(BlockEntityTypes.CAMPFIRE, level)) {
+			BlockPos campfirePos = campfireBlockEntity.getBlockPos();
+			if (!campfirePos.closerThan(pos, ConfigHandler.preventHostilesRadius)) {
+				continue;
+			}
+
+			if (isActiveCampfire(level, campfirePos, campfireBlockEntity.getBlockState())) {
+				return true;
+			}
+		}
 		return false;
 	}
 }
