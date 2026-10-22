@@ -1,13 +1,10 @@
 package com.serilum.nohostilesaroundcampfire.events;
 
-import com.natamus.collective.data.BlockEntityData;
 import com.natamus.collective.functions.CompareBlockFunctions;
-import com.natamus.collective.functions.EntityFunctions;
 import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
 import com.serilum.nohostilesaroundcampfire.util.Reference;
 import com.serilum.nohostilesaroundcampfire.util.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
@@ -15,9 +12,6 @@ import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,36 +19,83 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class CampfireEvent {
-	private static final HashMap<Level, List<BlockPos>> checkCampfireBurn = new HashMap<Level, List<BlockPos>>();
+	private static final int burnDurationInTicks = 600;
+	private static final String campfireBurnedTag = Reference.MOD_ID + ".campfireburned";
+	private static final WeakHashMap<Level, HashMap<BlockPos, Long>> burnStartTimes = new WeakHashMap<>();
 
-	public static void onCampfireAdded(Level level, BlockEntity blockEntity, BlockEntityType<?> blockEntityType) {
+	public static void onCampfirePlaced(Level level, BlockPos campfirePos) {
 		if (level.isClientSide) {
 			return;
 		}
 
-		if (!blockEntityType.equals(BlockEntityType.CAMPFIRE)) {
+		if (!ConfigHandler.burnHostilesAroundWhenPlaced) {
 			return;
 		}
 
-		BlockPos campfirePos = blockEntity.getBlockPos();
-		BlockState campfireState = blockEntity.getBlockState();
-		if (CompareBlockFunctions.blockIsInRegistryHolder(campfireState.getBlock(), BlockTags.CAMPFIRES)) {
-			boolean isLit = true;
-			if (ConfigHandler.campfireMustBeLit) {
-				isLit = campfireState.getValue(CampfireBlock.LIT);
+		BlockState campfireState = level.getBlockState(campfirePos);
+		if (!CompareBlockFunctions.blockIsInRegistryHolder(campfireState.getBlock(), BlockTags.CAMPFIRES)) {
+			return;
+		}
+
+		if (!Util.isActiveCampfire(level, campfirePos, campfireState)) {
+			return;
+		}
+
+		boolean burnedHostiles = false;
+		for (Mob mob : level.getEntitiesOfClass(Mob.class, getBurnArea(campfirePos))) {
+			if (!Util.entityIsHostile(mob)) {
+				continue;
 			}
 
-			if (isLit) {
-				int r = (int)(ConfigHandler.preventHostilesRadius * ConfigHandler.burnHostilesRadiusModifier);
-				List<Entity> entities = level.getEntities(null, new AABB(campfirePos.getX()-r, campfirePos.getY()-r, campfirePos.getZ()-r, campfirePos.getX()+r, campfirePos.getY()+r, campfirePos.getZ()+r));
-				for (Entity entity : entities) {
-					if (Util.entityIsHostile(entity)) {
-						entity.setRemainingFireTicks(600);
-					}
+			if (ConfigHandler.preventBurningNamedHostiles) {
+				if (mob.hasCustomName()) {
+					continue;
 				}
 			}
+
+			mob.setRemainingFireTicks(burnDurationInTicks);
+			mob.addTag(campfireBurnedTag);
+			burnedHostiles = true;
+		}
+
+		if (burnedHostiles) {
+			rememberBurnStart(level, campfirePos);
+		}
+	}
+
+	public static void onCubeMobRemoved(Mob cubeMob) {
+		Level level = cubeMob.level();
+		if (level.isClientSide) {
+			return;
+		}
+
+		if (!cubeMob.isDeadOrDying()) {
+			return;
+		}
+
+		if (!cubeMob.getTags().contains(campfireBurnedTag)) {
+			return;
+		}
+
+		int remainingFireTicks = cubeMob.getRemainingFireTicks();
+		if (remainingFireTicks <= 0) {
+			return;
+		}
+
+		for (Mob splitMob : level.getEntitiesOfClass(Mob.class, cubeMob.getBoundingBox().inflate(1.0))) {
+			if (splitMob.equals(cubeMob) || splitMob.tickCount > 0) {
+				continue;
+			}
+
+			if (!splitMob.getType().equals(cubeMob.getType())) {
+				continue;
+			}
+
+			splitMob.setRemainingFireTicks(remainingFireTicks);
+			splitMob.addTag(campfireBurnedTag);
 		}
 	}
 
@@ -63,66 +104,25 @@ public class CampfireEvent {
 			return true;
 		}
 
-		if (mob.getTags().contains(Reference.MOD_ID + ".checked" )) {
+		if (!Util.isPreventableSpawnReason(spawnReason)) {
 			return true;
-		}
-		mob.addTag(Reference.MOD_ID + ".checked");
-
-		if (!ConfigHandler.preventMobSpawnerSpawns) {
-			if (EntityFunctions.isEntityFromSpawner(mob)) {
-				return true;
-			}
 		}
 
 		if (!Util.entityIsHostile(mob)) {
 			return true;
 		}
 
-		BlockPos entityPos = mob.blockPosition();
-		Vec3i entityVec3i = new Vec3i(entityPos.getX(), entityPos.getY(), entityPos.getZ());
-
-		boolean foundCampfire = false;
-		for (BlockEntity campfireBlockEntity : BlockEntityData.getCachedBlockEntities(BlockEntityType.CAMPFIRE, level)) {
-			if (!campfireBlockEntity.getBlockPos().closerThan(entityVec3i, ConfigHandler.preventHostilesRadius)) {
-				continue;
-			}
-
-			BlockState campfireState = campfireBlockEntity.getBlockState();
-
-			Block block = campfireState.getBlock();
-			if (!(block instanceof CampfireBlock)) {
-				continue;
-			}
-
-			if (!ConfigHandler.enableEffectForNormalCampfires) {
-				if (block.equals(Blocks.CAMPFIRE)) {
-					continue;
-				}
-			}
-			if (!ConfigHandler.enableEffectForSoulCampfires) {
-				if (block.equals(Blocks.SOUL_CAMPFIRE)) {
-					continue;
-				}
-			}
-
-			if (ConfigHandler.campfireMustBeLit) {
-				Boolean isLit = campfireState.getValue(CampfireBlock.LIT);
-				if (!isLit) {
-					continue;
-				}
-			}
-			if (ConfigHandler.campfireMustBeSignalling) {
-				Boolean issignalling = campfireState.getValue(CampfireBlock.SIGNAL_FIRE);
-				if (!issignalling) {
-					continue;
-				}
-			}
-
-			foundCampfire = true;
-			break;
+		if (Util.isRaidMob(mob)) {
+			return true;
 		}
 
-		if (!foundCampfire) {
+		if (!ConfigHandler.preventMobSpawnerSpawns) {
+			if (Util.isSpawnerSpawn(mob, spawnReason)) {
+				return true;
+			}
+		}
+
+		if (!Util.isNearActiveCampfire(level, mob.blockPosition())) {
 			return true;
 		}
 
@@ -145,37 +145,45 @@ public class CampfireEvent {
 			return;
 		}
 
-		if (!ConfigHandler.burnHostilesAroundWhenPlaced) {
+		HashMap<BlockPos, Long> levelBurnStartTimes = burnStartTimes.get(level);
+		if (levelBurnStartTimes == null) {
 			return;
-		}
-
-		Block block = blockEntity.getBlockState().getBlock();
-		if (!(CompareBlockFunctions.blockIsInRegistryHolder(block, BlockTags.CAMPFIRES))) {
-			return;
-		}
-
-		if (!ConfigHandler.enableEffectForNormalCampfires) {
-			if (block.equals(Blocks.CAMPFIRE)) {
-				return;
-			}
-		}
-		if (!ConfigHandler.enableEffectForSoulCampfires) {
-			if (block.equals(Blocks.SOUL_CAMPFIRE)) {
-				return;
-			}
 		}
 
 		BlockPos campfirePos = blockEntity.getBlockPos();
+		Long burnStartTime = levelBurnStartTimes.remove(campfirePos);
+		if (burnStartTime == null) {
+			return;
+		}
 
-		int r = (int)(ConfigHandler.preventHostilesRadius * ConfigHandler.burnHostilesRadiusModifier);
+		if (level.getGameTime() - burnStartTime > burnDurationInTicks) {
+			return;
+		}
 
-		for (Entity entity : level.getEntities(null, new AABB(campfirePos.getX()-r, campfirePos.getY()-r, campfirePos.getZ()-r, campfirePos.getX()+r, campfirePos.getY()+r, campfirePos.getZ()+r))) {
-			if (Util.entityIsHostile(entity)) {
-				if (entity.isOnFire()) {
-					entity.clearFire();
-					entity.setRemainingFireTicks(40);
+		for (Mob mob : level.getEntitiesOfClass(Mob.class, getBurnArea(campfirePos))) {
+			if (Util.entityIsHostile(mob)) {
+				if (mob.isOnFire()) {
+					mob.clearFire();
+					mob.setRemainingFireTicks(40);
 				}
 			}
-		}	
+		}
+	}
+
+	private static AABB getBurnArea(BlockPos campfirePos) {
+		int r = (int)(ConfigHandler.preventHostilesRadius * ConfigHandler.burnHostilesRadiusModifier);
+		return new AABB(campfirePos.getX()-r, campfirePos.getY()-r, campfirePos.getZ()-r, campfirePos.getX()+r, campfirePos.getY()+r, campfirePos.getZ()+r);
+	}
+
+	private static void rememberBurnStart(Level level, BlockPos campfirePos) {
+		HashMap<BlockPos, Long> levelBurnStartTimes = burnStartTimes.get(level);
+		if (levelBurnStartTimes == null) {
+			levelBurnStartTimes = new HashMap<>();
+			burnStartTimes.put(level, levelBurnStartTimes);
+		}
+
+		long gameTime = level.getGameTime();
+		levelBurnStartTimes.values().removeIf(burnStartTime -> gameTime - burnStartTime > burnDurationInTicks);
+		levelBurnStartTimes.put(campfirePos.immutable(), gameTime);
 	}
 }

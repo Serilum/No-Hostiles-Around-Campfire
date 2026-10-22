@@ -3,9 +3,7 @@ package com.serilum.nohostilesaroundcampfire;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
 import com.serilum.nohostilesaroundcampfire.neoforge.config.IntegrateNeoForgeConfig;
-import com.serilum.nohostilesaroundcampfire.neoforge.events.NeoForgeCampfireEvent;
 import com.serilum.nohostilesaroundcampfire.util.Reference;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -30,7 +28,7 @@ public class ModNeoForge {
 	}
 
 	private void loadComplete(final FMLLoadCompleteEvent event) {
-		NeoForge.EVENT_BUS.register(NeoForgeCampfireEvent.class);
+
 	}
 
 	private static void setGlobalConstants() {
