@@ -3,7 +3,6 @@ package com.serilum.nohostilesaroundcampfire;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
 import com.serilum.nohostilesaroundcampfire.forge.config.IntegrateForgeConfig;
-import com.serilum.nohostilesaroundcampfire.forge.events.ForgeCampfireEvent;
 import com.serilum.nohostilesaroundcampfire.util.Reference;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
@@ -30,7 +29,7 @@ public class ModForge {
 	}
 
 	private void loadComplete(final FMLLoadCompleteEvent event) {
-		ForgeCampfireEvent.registerEventsInBus();
+
 	}
 
 	private static void setGlobalConstants() {
