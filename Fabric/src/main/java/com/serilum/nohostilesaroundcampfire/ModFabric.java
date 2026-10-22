@@ -2,14 +2,8 @@ package com.serilum.nohostilesaroundcampfire;
 
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
-import com.natamus.collective.fabric.callbacks.CollectiveSpawnEvents;
-import com.serilum.nohostilesaroundcampfire.events.CampfireEvent;
 import com.serilum.nohostilesaroundcampfire.util.Reference;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 
 public class ModFabric implements ModInitializer {
 
@@ -28,9 +22,8 @@ public class ModFabric implements ModInitializer {
 	}
 
 	private void loadEvents() {
-		CollectiveSpawnEvents.MOB_CHECK_SPAWN.register((Mob entity, ServerLevel world, BlockPos spawnerPos, MobSpawnType spawnReason) -> {
-			return CampfireEvent.onEntityCheckSpawn(entity, world, spawnerPos, spawnReason);
-		});
+
+
 	}
 
 	private static void setGlobalConstants() {
