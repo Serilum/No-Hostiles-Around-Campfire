@@ -1,7 +1,7 @@
-package com.natamus.nohostilesaroundcampfire.forge.config;
+package com.serilum.nohostilesaroundcampfire.forge.config;
 
 import com.natamus.collective.config.DuskConfig;
-import com.natamus.nohostilesaroundcampfire.util.Reference;
+import com.serilum.nohostilesaroundcampfire.util.Reference;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 
