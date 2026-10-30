@@ -1,6 +1,7 @@
 package com.serilum.nohostilesaroundcampfire.util;
 
 import com.natamus.collective.data.BlockEntityData;
+import com.natamus.collective.functions.CampfireFunctions;
 import com.natamus.collective.functions.ConfigFunctions;
 import com.natamus.collective.functions.EntityFunctions;
 import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
@@ -16,11 +17,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
@@ -119,29 +116,26 @@ public class Util {
 	}
 
 	public static boolean isActiveCampfire(Level level, BlockPos campfirePos, BlockState campfireState) {
-		Block block = campfireState.getBlock();
-		if (!(block instanceof CampfireBlock)) {
+		if (!CampfireFunctions.isCampfire(campfireState)) {
 			return false;
 		}
 
-		if (!ConfigHandler.enableEffectForNormalCampfires) {
-			if (block.equals(Blocks.CAMPFIRE)) {
+		if (CampfireFunctions.isSoulCampfire(campfireState)) {
+			if (!ConfigHandler.enableEffectForSoulCampfires) {
 				return false;
 			}
 		}
-		if (!ConfigHandler.enableEffectForSoulCampfires) {
-			if (block.equals(Blocks.SOUL_CAMPFIRE)) {
-				return false;
-			}
+		else if (!ConfigHandler.enableEffectForNormalCampfires) {
+			return false;
 		}
 
 		if (ConfigHandler.campfireMustBeLit) {
-			if (!campfireState.getValue(CampfireBlock.LIT)) {
+			if (!CampfireFunctions.isLit(campfireState)) {
 				return false;
 			}
 		}
 		if (ConfigHandler.campfireMustBeSignalling) {
-			if (!campfireState.getValue(CampfireBlock.SIGNAL_FIRE)) {
+			if (!CampfireFunctions.isSignalling(campfireState)) {
 				return false;
 			}
 		}
@@ -155,7 +149,7 @@ public class Util {
 	}
 
 	public static boolean isNearActiveCampfire(ServerLevel level, BlockPos pos) {
-		for (BlockEntity campfireBlockEntity : BlockEntityData.getCachedBlockEntities(BlockEntityType.CAMPFIRE, level)) {
+		for (BlockEntity campfireBlockEntity : BlockEntityData.getCachedCampfires(level)) {
 			BlockPos campfirePos = campfireBlockEntity.getBlockPos();
 			if (!campfirePos.closerThan(pos, ConfigHandler.preventHostilesRadius)) {
 				continue;
