@@ -1,12 +1,11 @@
 package com.serilum.nohostilesaroundcampfire.events;
 
-import com.natamus.collective.functions.CompareBlockFunctions;
+import com.natamus.collective.functions.CampfireFunctions;
 import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
 import com.serilum.nohostilesaroundcampfire.util.Reference;
 import com.serilum.nohostilesaroundcampfire.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -14,7 +13,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
@@ -37,7 +35,7 @@ public class CampfireEvent {
 		}
 
 		BlockState campfireState = level.getBlockState(campfirePos);
-		if (!CompareBlockFunctions.blockIsInRegistryHolder(campfireState.getBlock(), BlockTags.CAMPFIRES)) {
+		if (!CampfireFunctions.isCampfire(campfireState)) {
 			return;
 		}
 
@@ -142,7 +140,7 @@ public class CampfireEvent {
 			return;
 		}
 
-		if (!blockEntityType.equals(BlockEntityTypes.CAMPFIRE)) {
+		if (!CampfireFunctions.isCampfire(blockEntity.getBlockState())) {
 			return;
 		}
 

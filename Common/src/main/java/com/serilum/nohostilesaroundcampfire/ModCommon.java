@@ -5,7 +5,6 @@ import com.natamus.collective.globalcallbacks.CachedBlockEntityCallback;
 import com.natamus.collective.globalcallbacks.CollectiveSpawnCallback;
 import com.serilum.nohostilesaroundcampfire.config.ConfigHandler;
 import com.serilum.nohostilesaroundcampfire.events.CampfireEvent;
-import net.minecraft.world.level.block.entity.BlockEntityTypes;
 
 public class ModCommon {
 
@@ -15,7 +14,7 @@ public class ModCommon {
 	}
 
 	private static void load() {
-		BlockEntityData.addBlockEntityToCache(BlockEntityTypes.CAMPFIRE, true, false);
+		BlockEntityData.addCampfiresToCache();
 
 		CachedBlockEntityCallback.BLOCK_ENTITY_REMOVED.register((level, blockEntity, blockEntityType) -> {
 			CampfireEvent.onCampfireRemoved(level, blockEntity, blockEntityType);
